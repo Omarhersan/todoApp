@@ -1,10 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 
-const supaClient = await createClient();
 
 
 
 export async function GET(req: Request, ctx: RouteContext<'/api/todo/[id]'>) {
+    const supaClient = await createClient();
+
     const { id } = await ctx.params;
     const { data, error } = await supaClient
         .from("todos")
@@ -17,11 +18,14 @@ export async function GET(req: Request, ctx: RouteContext<'/api/todo/[id]'>) {
     }
 
     return Response.json({
+        "status": 200,
         "data": data
     })
 }
 
 export async function POST(req: Request) {
+    const supaClient = await createClient();
+
     const data = await req.json();
     const response = await supaClient.from('todos').insert(data);
 
@@ -30,12 +34,14 @@ export async function POST(req: Request) {
     }
 
     return Response.json({
-        "message": "Todo created successfully!",
+        "status": 201,
         "data": data
     })
 }
 
 export async function DELETE(req: Request) {
+    const supaClient = await createClient();
+
     const { id } = await req.json();
     const response = await supaClient.from('todos').delete().eq('id', id);
 
@@ -44,12 +50,14 @@ export async function DELETE(req: Request) {
     }
 
     return Response.json({
-        "message": "Todo deleted successfully!",
+        "status": 200,
         "id": id
     })
 }
 
 export async function PUT(req: Request) {
+    const supaClient = await createClient();
+
     const data = await req.json();
     const response = await supaClient.from('todos').update(data).eq('id', data.id);
 
@@ -58,7 +66,7 @@ export async function PUT(req: Request) {
     }
 
     return Response.json({
-        "message": "Todo updated successfully!",
+        "status": 200,
         "data": data
     })
 }
