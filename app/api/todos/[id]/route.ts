@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 
 
 
-export async function GET(req: Request, ctx: RouteContext<'/api/todo/[id]'>) {
+export async function GET(req: Request, ctx: RouteContext<'/api/todos/[id]'>) {
     const supaClient = await createClient();
 
     const { id } = await ctx.params;
