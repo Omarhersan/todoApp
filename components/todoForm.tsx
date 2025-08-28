@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from "react";
-import type { Todo } from "./todo";
+import type { Todo } from "@/types/todo";
+
 
 export default function NewTodoForm({
   onAdd,
@@ -54,34 +55,35 @@ export default function NewTodoForm({
   }
 
   return (
-    <div className="mb-4 flex flex-col gap-2 border p-2 rounded">
-      <input
-        className="border rounded p-1"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="New task title"
-      />
-      <textarea
-        className="border rounded p-1"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="New task description"
-      />
-      <div className="flex gap-2">
-        <button
-          className="px-3 py-1 bg-green-500 text-white rounded"
-          onClick={handleAdd}
-          disabled={adding}
-        >
-          {adding ? "Adding..." : "Add Task"}
-        </button>
-        <button
-          className="px-3 py-1 border rounded"
-          onClick={handleCancel}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
+    <div className="mb-4 flex flex-col gap-2 border rounded-lg p-4 bg-card/70 backdrop-blur-md shadow-md">
+  <input
+    className="border rounded p-2 bg-background text-foreground"
+    value={title}
+    onChange={(e) => setTitle(e.target.value)}
+    placeholder="New task title"
+  />
+  <textarea
+    className="border rounded p-2 bg-background text-foreground"
+    value={description}
+    onChange={(e) => setDescription(e.target.value)}
+    placeholder="New task description"
+  />
+  <div className="flex gap-2 mt-2">
+    <button
+      className="px-4 py-2 bg-primary text-primary-foreground rounded"
+      onClick={handleAdd}
+      disabled={adding}
+    >
+      {adding ? "Adding..." : "Add Task"}
+    </button>
+    <button
+      className="px-4 py-2 border rounded"
+      onClick={handleCancel}
+    >
+      Cancel
+    </button>
+  </div>
+</div>
+
   );
 }

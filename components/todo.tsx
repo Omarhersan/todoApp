@@ -3,16 +3,7 @@
 import { useEffect, useState } from "react";
 import TodoItem from "./todoItem";
 import NewTodoForm from "./todoForm";
-
-// Define Todo type here
-export type Todo = {
-  id: number;
-  title: string;
-  created_at: string;
-  is_completed: boolean;
-  completed_at: string | null;
-  description: string;
-};
+import type { Todo } from "@/types/todo";
 
 export default function Todo() {
   const [todosData, setTodos] = useState<Todo[]>([]);
@@ -33,25 +24,22 @@ export default function Todo() {
 
   function updateTodo(updatedTodo: Todo) {
     setTodos(prev =>
-        prev.map(todo => (todo.id === updatedTodo.id ? updatedTodo : todo))
+      prev.map(todo => (todo.id === updatedTodo.id ? updatedTodo : todo))
     );
-    }
-
+  }
 
   function addTodo(newTodo: Todo) {
     setTodos(prev => [...prev, newTodo]);
-    setShowNewForm(false); // collapse after adding
+    setShowNewForm(false);
   }
 
   return (
-    <div>
-      <h1 className="text-xl font-bold mb-4">Todo List</h1>
-
-      {/* Collapsible Add Task Button */}
-      <div className="mb-4">
+    <div className="flex flex-col gap-6">
+      {/* Add Task Button / Inline Form */}
+      <div>
         {!showNewForm ? (
           <button
-            className="px-3 py-1 bg-green-500 text-white rounded"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded shadow hover:shadow-lg transition"
             onClick={() => setShowNewForm(true)}
           >
             + Add New Task
@@ -64,7 +52,8 @@ export default function Todo() {
         )}
       </div>
 
-      <ul className="space-y-2">
+      {/* Todo Grid */}
+      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {todosData.map(todo => (
           <TodoItem
             key={todo.id}
