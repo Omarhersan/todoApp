@@ -1,7 +1,7 @@
 // app/api/tasks/enhance/route.ts
 import { createClient } from "@/lib/supabase/server";
 
-const supabase = await createClient()
+const supabase = await createClient();
 
 export async function POST(req: Request) {
   try {
