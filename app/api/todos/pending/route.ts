@@ -6,7 +6,7 @@ export async function GET() {
   
   const { data, error } = await supabase
     .from("todos")
-    .select("id,title,user_id")
+    .select("id,title,user_id,description")
     .eq("enhancement_status", "pending");
 
   if (error) return new Response(JSON.stringify({ error }), { status: 500 });
