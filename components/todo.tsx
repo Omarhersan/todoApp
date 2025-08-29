@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import TodoItem from "./todoItem";
 import NewTodoForm from "./todoForm";
 import type { Todo } from "@/types/todo";
@@ -8,15 +9,27 @@ import type { Todo } from "@/types/todo";
 export default function Todo() {
   const [todosData, setTodos] = useState<Todo[]>([]);
   const [showNewForm, setShowNewForm] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
-    async function fetchData() {
-      const res = await fetch('/api/todos');
-      const data = await res.json();
-      setTodos(data.data);
+    if (user) {
+      fetchTodos();
     }
-    fetchData();
-  }, []);
+  }, [user]);
+
+  async function fetchTodos() {
+    try {
+      const res = await fetch('/api/todos');
+      if (res.ok) {
+        const data = await res.json();
+        setTodos(data.data);
+      } else {
+        console.error('Failed to fetch todos:', await res.text());
+      }
+    } catch (error) {
+      console.error('Error fetching todos:', error);
+    }
+  }
 
   function removeTodo(id: number) {
     setTodos(prev => prev.filter(todo => todo.id !== id));
@@ -31,6 +44,10 @@ export default function Todo() {
   function addTodo(newTodo: Todo) {
     setTodos(prev => [...prev, newTodo]);
     setShowNewForm(false);
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (

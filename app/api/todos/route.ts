@@ -1,12 +1,20 @@
 import { createClient } from "@/lib/supabase/server"
-
+import { cookies } from "next/headers";
 
 export async function GET(req: Request){
+    const cookieStore = await cookies();
+    const userIdCookie = cookieStore.get("user_id");
+
+    if (!userIdCookie) {
+        return Response.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
     const supaClient = await createClient();
 
     const { data, error } = await supaClient
         .from("todos")
-        .select("*");
+        .select("*")
+        .eq("user_id", userIdCookie.value);
 
     if (error) {
         return Response.json({ error: error.message }, { status: 500 });
@@ -19,16 +27,16 @@ export async function GET(req: Request){
 }
 
 export async function POST(req: Request) {
+  const cookieStore = await cookies();
+  const userIdCookie = cookieStore.get("user_id");
+
+  if (!userIdCookie) {
+    return Response.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
   const supaClient = await createClient();
 
   const { title, description } = await req.json();
-
-  // Get the logged-in user
-  const {
-    data: { user },
-  } = await supaClient.auth.getUser();
-
-  if (!user) return Response.json({ error: "Not authenticated" }, { status: 401 });
 
   const { data, error } = await supaClient
     .from("todos")
@@ -38,7 +46,7 @@ export async function POST(req: Request) {
       is_completed: false,
       created_at: new Date().toISOString(),
       completed_at: null,
-      user_id: user.id, // RLS requires this
+      user_id: parseInt(userIdCookie.value),
     })
     .select()
     .single();

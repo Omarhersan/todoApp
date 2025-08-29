@@ -1,16 +1,22 @@
 import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
 
+export async function GET(req: Request, ctx: { params: { id: string } }) {
+    const cookieStore = await cookies();
+    const userIdCookie = cookieStore.get("user_id");
 
+    if (!userIdCookie) {
+        return Response.json({ error: "Not authenticated" }, { status: 401 });
+    }
 
-
-export async function GET(req: Request, ctx: RouteContext<'/api/todos/[id]'>) {
     const supaClient = await createClient();
 
-    const { id } = await ctx.params;
+    const { id } = ctx.params;
     const { data, error } = await supaClient
         .from("todos")
         .select("*")
         .eq("id", id)
+        .eq("user_id", userIdCookie.value)
         .single();
 
     if (error) {
@@ -23,27 +29,18 @@ export async function GET(req: Request, ctx: RouteContext<'/api/todos/[id]'>) {
     })
 }
 
-export async function POST(req: Request) {
-    const supaClient = await createClient();
+export async function DELETE(req: Request) {
+    const cookieStore = await cookies();
+    const userIdCookie = cookieStore.get("user_id");
 
-    const data = await req.json();
-    const response = await supaClient.from('todos').insert(data);
-
-    if (response.error) {
-        return Response.json({ error: response.error.message }, { status: 500 });
+    if (!userIdCookie) {
+        return Response.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    return Response.json({
-        "status": 201,
-        "data": data
-    })
-}
-
-export async function DELETE(req: Request) {
     const supaClient = await createClient();
 
     const { id } = await req.json();
-    const response = await supaClient.from('todos').delete().eq('id', id);
+    const response = await supaClient.from('todos').delete().eq('id', id).eq('user_id', userIdCookie.value);
 
     if (response.error) {
         return Response.json({ error: response.error.message }, { status: 500 });
@@ -56,10 +53,17 @@ export async function DELETE(req: Request) {
 }
 
 export async function PUT(req: Request) {
+    const cookieStore = await cookies();
+    const userIdCookie = cookieStore.get("user_id");
+
+    if (!userIdCookie) {
+        return Response.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
     const supaClient = await createClient();
 
     const data = await req.json();
-    const response = await supaClient.from('todos').update(data).eq('id', data.id);
+    const response = await supaClient.from('todos').update(data).eq('id', data.id).eq('user_id', userIdCookie.value);
 
     if (response.error) {
         return Response.json({ error: response.error.message }, { status: 500 });

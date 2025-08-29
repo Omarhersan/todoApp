@@ -5,4 +5,5 @@ export type Todo = {
   is_completed: boolean;
   completed_at: string | null;
   description: string;
+  user_id: number;
 };
