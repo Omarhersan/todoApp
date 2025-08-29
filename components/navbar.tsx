@@ -13,7 +13,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full flex justify-between items-center p-4 bg-card/80 backdrop-blur-md rounded-xl shadow-md">
+    <nav className="w-full flex justify-between items-center p-4 bg-card/80 backdrop-blur-md rounded-xl shadow-md ">
       <h2 className="font-bold text-lg">My Todo App</h2>
       <div className="flex items-center gap-4">
         <DarkModeToggle />
