@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 
-const supabase = await createClient();
-
 // app/api/tasks/pending/route.ts
 export async function GET() {
+  const supabase = await createClient();
+  
   const { data, error } = await supabase
     .from("todos")
     .select("id,title,user_id")

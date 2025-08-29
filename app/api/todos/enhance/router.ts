@@ -25,7 +25,8 @@ export async function POST(req: Request) {
     }
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+    return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });
   }
 }

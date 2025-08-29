@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
     // Clear the session cookie
     const cookieStore = await cookies();
