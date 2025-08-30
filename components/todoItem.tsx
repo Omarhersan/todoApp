@@ -21,7 +21,7 @@ export default function TodoItem({
   const [saving, setSaving] = useState(false);
 
   async function toggleTodo() {
-    const res = await fetch(`/api/todos/${todo.id}`, {
+    const res = await fetch(`/api/todos/handle/${todo.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -38,7 +38,7 @@ export default function TodoItem({
   }
 
   async function handleDelete() {
-    const res = await fetch(`/api/todos/${todo.id}`, {
+    const res = await fetch(`/api/todos/handle${todo.id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: todo.id }),
@@ -54,7 +54,7 @@ export default function TodoItem({
   async function handleSave() {
     setSaving(true);
     try {
-      const res = await fetch(`/api/todos/${todo.id}`, {
+      const res = await fetch(`/api/todos/handle${todo.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
