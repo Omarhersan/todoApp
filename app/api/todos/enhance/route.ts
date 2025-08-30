@@ -1,7 +1,7 @@
 // app/api/tasks/enhance/route.ts
 import { createClient } from "@/lib/supabase/server";
 
-export function GET(req: Request) {
+export function GET() {
   return new Response("Hello from the GET handler");
 }
 
