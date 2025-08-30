@@ -14,20 +14,23 @@ export async function POST(req: Request) {
     }
 
     const supabase = await createClient();
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("todos")
       .update({
         enhanced_title: enhancedTitle,
         enhancement_status: "done",
         steps: steps || [],
       })
-      .eq("id", taskId);
+      .eq("id", taskId)
+      .select()
+      .single();
 
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), { status: 500 });
     }
 
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
+    // Return the updated todo data for immediate frontend update
+    return new Response(JSON.stringify({ success: true, data }), { status: 200 });
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
     return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });

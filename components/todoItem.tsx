@@ -19,6 +19,12 @@ export default function TodoItem({
   const [title, setTitle] = useState(todo.title);
   const [description, setDescription] = useState(todo.description);
   const [saving, setSaving] = useState(false);
+  const [showSteps, setShowSteps] = useState(false);
+  const [enhancing, setEnhancing] = useState(false);
+
+  // Use enhanced title if available, otherwise use original title
+  const displayTitle = todo.enhanced_title || todo.title;
+  const isEnhanced = !!todo.enhanced_title;
 
   async function toggleTodo() {
     const res = await fetch(`/api/todos/handle/${todo.id}`, {
@@ -82,19 +88,87 @@ export default function TodoItem({
     setExpanded(false);
   }
 
+  async function handleEnhance() {
+    setEnhancing(true);
+    try {
+      const res = await fetch('/api/todos/enhance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          taskId: todo.id,
+          enhancedTitle: `Enhanced: ${todo.title}`, // This could be improved with AI
+          steps: [
+            'Break down the task into smaller steps',
+            'Set priorities and deadlines',
+            'Execute each step systematically'
+          ] // This could also be AI-generated
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error);
+      }
+
+      const result = await res.json();
+      if (result.success && result.data) {
+        onUpdateLocal(result.data);
+      }
+    } catch (error) {
+      console.error('Error enhancing todo:', error);
+      // You might want to show a toast notification here
+    } finally {
+      setEnhancing(false);
+    }
+  }
+
   return (
     <li className="flex flex-col p-4 rounded-lg border bg-card/70 backdrop-blur-md shadow-md mb-2 transition hover:shadow-lg">
   <div className="flex items-start justify-between">
     <div className="flex items-start gap-3">
       <CheckButton checked={checked} onToggle={toggleTodo} />
       <div className="flex flex-col">
-        <p className={checked ? "line-through text-muted-foreground font-semibold" : "font-semibold text-foreground"}>
-          {todo.title}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className={checked ? "line-through text-muted-foreground font-semibold" : "font-semibold text-foreground"}>
+            {displayTitle}
+          </p>
+          {isEnhanced && (
+            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+              Enhanced
+            </span>
+          )}
+          {enhancing && (
+            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+              Enhancing...
+            </span>
+          )}
+        </div>
         <p className="text-muted-foreground text-sm mt-1">{todo.description}</p>
+        {todo.steps && todo.steps.length > 0 && (
+          <div className="mt-2">
+            <button
+              onClick={() => setShowSteps(!showSteps)}
+              className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
+            >
+              {showSteps ? '▼' : '▶'} Steps ({todo.steps.length})
+            </button>
+            {showSteps && (
+              <ul className="mt-1 ml-4 text-sm text-muted-foreground">
+                {todo.steps.map((step, index) => (
+                  <li key={index} className="list-disc">
+                    {step}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </div>
     </div>
-    <ActionsMenu onEdit={handleEdit} onDelete={handleDelete} />
+    <ActionsMenu 
+      onEdit={handleEdit} 
+      onDelete={handleDelete} 
+    />
   </div>
 
   {expanded && (

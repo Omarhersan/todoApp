@@ -6,4 +6,7 @@ export type Todo = {
   completed_at: string | null;
   description: string;
   user_id: number;
+  enhanced_title?: string;
+  steps?: string[];
+  enhancement_status?: string;
 };
