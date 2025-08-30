@@ -9,7 +9,7 @@ All external API endpoints are under `/api/external/todos`
 All requests require:
 1. **Authorization Header**: `Authorization: Bearer <API_KEY>`
 2. **Call From Header**: `x-call-from: n8n` (or your configured source)
-3. **User ID Header**: `x-user-id: <user_id>` (the user whose todos you want to manage)
+3. **User Phone Header**: `x-user-phone: <phone_number>` (the phone number of the user whose todos you want to manage)
 
 ## Available Endpoints
 
@@ -22,7 +22,7 @@ GET /api/external/todos
 ```
 Authorization: Bearer <N8N_API_KEY>
 x-call-from: n8n
-x-user-id: 123
+x-user-phone: 1234567890
 ```
 
 **Response:**
@@ -54,7 +54,7 @@ GET /api/external/todos/{id}
 ```
 Authorization: Bearer <N8N_API_KEY>
 x-call-from: n8n
-x-user-id: 123
+x-user-phone: 1234567890
 ```
 
 **Response:**
@@ -84,7 +84,7 @@ POST /api/external/todos
 ```
 Authorization: Bearer <N8N_API_KEY>
 x-call-from: n8n
-x-user-id: 123
+x-user-phone: 1234567890
 Content-Type: application/json
 ```
 
@@ -123,7 +123,7 @@ PUT /api/external/todos/{id}
 ```
 Authorization: Bearer <N8N_API_KEY>
 x-call-from: n8n
-x-user-id: 123
+x-user-phone: 1234567890
 Content-Type: application/json
 ```
 
@@ -163,7 +163,7 @@ DELETE /api/external/todos/{id}
 ```
 Authorization: Bearer <N8N_API_KEY>
 x-call-from: n8n
-x-user-id: 123
+x-user-phone: 1234567890
 ```
 
 **Response:**
@@ -180,7 +180,15 @@ x-user-id: 123
 ### 400 Bad Request
 ```json
 {
-  "error": "x-user-id header is required for external API calls"
+  "error": "x-user-phone header is required for external API calls"
+}
+```
+
+**OR**
+
+```json
+{
+  "error": "User not found with phone number: 1234567890"
 }
 ```
 
@@ -214,7 +222,7 @@ x-user-id: 123
 curl -X POST http://localhost:3000/api/external/todos \
   -H "Authorization: Bearer $N8N_API_KEY" \
   -H "x-call-from: n8n" \
-  -H "x-user-id: 123" \
+  -H "x-user-phone: 1234567890" \
   -H "Content-Type: application/json" \
   -d '{"title": "Test Todo", "description": "Created via API"}'
 ```
@@ -224,7 +232,7 @@ curl -X POST http://localhost:3000/api/external/todos \
 curl -X GET http://localhost:3000/api/external/todos \
   -H "Authorization: Bearer $N8N_API_KEY" \
   -H "x-call-from: n8n" \
-  -H "x-user-id: 123"
+  -H "x-user-phone: 1234567890"
 ```
 
 **Update a todo:**
@@ -232,7 +240,7 @@ curl -X GET http://localhost:3000/api/external/todos \
 curl -X PUT http://localhost:3000/api/external/todos/1 \
   -H "Authorization: Bearer $N8N_API_KEY" \
   -H "x-call-from: n8n" \
-  -H "x-user-id: 123" \
+  -H "x-user-phone: 1234567890" \
   -H "Content-Type: application/json" \
   -d '{"is_completed": true}'
 ```
@@ -242,18 +250,20 @@ curl -X PUT http://localhost:3000/api/external/todos/1 \
 curl -X DELETE http://localhost:3000/api/external/todos/1 \
   -H "Authorization: Bearer $N8N_API_KEY" \
   -H "x-call-from: n8n" \
-  -H "x-user-id: 123"
+  -H "x-user-phone: 1234567890"
 ```
 
 ## Security Notes
 
-- All requests are scoped to the user specified in the `x-user-id` header
+- All requests are scoped to the user specified in the `x-user-phone` header
+- The system automatically looks up the user ID based on the phone number
 - Users can only access their own todos (enforced by user_id filtering)
+- Phone numbers must match exactly what's stored in the users table
 - Bearer token authentication prevents unauthorized access
 - All external todos are marked with `source: "external_api"` for tracking
 
 ## Frontend vs External API
 
 - **Frontend**: Uses `/api/todos` with cookie authentication (unchanged)
-- **External APIs**: Uses `/api/external/todos` with Bearer token authentication
+- **External APIs**: Uses `/api/external/todos` with Bearer token authentication + phone number
 - Both access the same database but with different authentication methods
