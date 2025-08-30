@@ -20,7 +20,6 @@ export default function TodoItem({
   const [description, setDescription] = useState(todo.description);
   const [saving, setSaving] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
-  const [enhancing, setEnhancing] = useState(false);
 
   // Use enhanced title if available, otherwise use original title
   const displayTitle = todo.enhanced_title || todo.title;
@@ -88,39 +87,7 @@ export default function TodoItem({
     setExpanded(false);
   }
 
-  async function handleEnhance() {
-    setEnhancing(true);
-    try {
-      const res = await fetch('/api/todos/enhance', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          taskId: todo.id,
-          enhancedTitle: `Enhanced: ${todo.title}`, // This could be improved with AI
-          steps: [
-            'Break down the task into smaller steps',
-            'Set priorities and deadlines',
-            'Execute each step systematically'
-          ] // This could also be AI-generated
-        }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error);
-      }
-
-      const result = await res.json();
-      if (result.success && result.data) {
-        onUpdateLocal(result.data);
-      }
-    } catch (error) {
-      console.error('Error enhancing todo:', error);
-      // You might want to show a toast notification here
-    } finally {
-      setEnhancing(false);
-    }
-  }
+  
 
   return (
     <li className="flex flex-col p-4 rounded-lg border bg-card/70 backdrop-blur-md shadow-md mb-2 transition hover:shadow-lg">
@@ -135,11 +102,6 @@ export default function TodoItem({
           {isEnhanced && (
             <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
               Enhanced
-            </span>
-          )}
-          {enhancing && (
-            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-              Enhancing...
             </span>
           )}
         </div>
