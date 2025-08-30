@@ -11,7 +11,8 @@ export function middleware(request: NextRequest) {
     // Define external API routes that require bearer token authentication
     const externalApiRoutes = [
       '/api/todos/enhance',
-      '/api/todos/pending'
+      '/api/todos/pending',
+      '/api/external/todos'
     ];
     
     // Check if this is an external API route that needs bearer token
