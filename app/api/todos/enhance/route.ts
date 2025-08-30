@@ -1,7 +1,9 @@
 // app/api/tasks/enhance/route.ts
 import { createClient } from "@/lib/supabase/server";
 
-const supabase = await createClient();
+export function GET(req: Request) {
+  return new Response("Hello from the GET handler");
+}
 
 export async function POST(req: Request) {
   try {
@@ -11,6 +13,7 @@ export async function POST(req: Request) {
       return new Response(JSON.stringify({ error: "Invalid payload" }), { status: 400 });
     }
 
+    const supabase = await createClient();
     const { error } = await supabase
       .from("todos")
       .update({

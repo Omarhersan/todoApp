@@ -1,8 +1,40 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+const apiKeys = {
+  n8n: process.env.N8N_API_KEY}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith('/api')) {
+    // Define external API routes that require bearer token authentication
+    const externalApiRoutes = [
+      '/api/todos/enhance',
+      '/api/todos/pending'
+    ];
+    
+    // Check if this is an external API route that needs bearer token
+    const isExternalApi = externalApiRoutes.some(route => pathname.startsWith(route));
+    
+    if (isExternalApi) {
+      // For external API calls, require bearer token authentication
+      const authHeader = request.headers.get("Authorization");
+      const callFrom = request.headers.get("x-call-from");
+      const apiKey = apiKeys[callFrom as keyof typeof apiKeys];
+
+      console.log(`Auth Header: ${authHeader}`);
+      console.log(`API Key: ${apiKey}`);
+      console.log(`Call From: ${callFrom}`);
+
+      if (!authHeader || authHeader !== `Bearer ${apiKey}`) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    }
+    // All other API routes (internal) will pass through without bearer token check
+
+    return NextResponse.next();
+  }
   
   // Get user_id from cookies
   const userIdCookie = request.cookies.get('user_id');
@@ -30,12 +62,15 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
+     * Match all request paths except for static files and Next.js internals
      * - _next/static (static files)
      * - _next/image (image optimization files)
+     * - _next/webpack-hmr (HMR)
+     * - _next/* (all other Next.js internal routes)
      * - favicon.ico (favicon file)
+     * - *.ico, *.png, *.svg, *.jpg, *.jpeg, *.gif, *.webp (image files)
+     * Include API routes for authentication
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next|favicon.ico|.*\\.ico$|.*\\.png$|.*\\.svg$|.*\\.jpg$|.*\\.jpeg$|.*\\.gif$|.*\\.webp$).*)',
   ],
 };
