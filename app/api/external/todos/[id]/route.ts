@@ -3,10 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 // Helper function to get user phone from request headers and fetch user_id
 async function getUserIdFromPhone(request: Request): Promise<{ userId: number; error?: string }> {
   let phoneHeader = request.headers.get("x-user-phone");
-  if(phoneHeader?.startsWith('52')){
-    phoneHeader = phoneHeader.slice(0,2)+phoneHeader.slice(3);
-  }
-  
+  phoneHeader = phoneHeader?.slice(4) || '';
+
   if (!phoneHeader) {
     return { userId: 0, error: "x-user-phone header is required for external API calls" };
   }
