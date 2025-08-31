@@ -14,10 +14,14 @@ export const metadata: Metadata = {
   description: "The fastest way to build apps with Next.js and Supabase",
 };
 
+// Optimized font loading with better performance settings
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  display: "swap",
+  display: "swap", // Ensures text remains visible during font swap
   subsets: ["latin"],
+  fallback: ['system-ui', 'arial'], // Better fallback chain
+  preload: true, // Preload the font
+  adjustFontFallback: false, // Let Next.js handle this automatically
 });
 
 export default function RootLayout({

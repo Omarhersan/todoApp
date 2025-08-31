@@ -1,11 +1,29 @@
 'use client'
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useAuth } from "@/lib/auth-context";
-import TodoItem from "./todoItem";
-import NewTodoForm from "./todoForm";
-import EnhancementStats from "./enhancementStats";
+import dynamic from "next/dynamic";
 import type { Todo } from "@/types/todo";
+
+// Dynamically import heavy components with loading states
+const TodoItem = dynamic(() => import("./todoItem"), {
+  loading: () => (
+    <div className="animate-pulse bg-card/20 h-16 rounded-lg border border-border/20"></div>
+  ),
+  ssr: false
+});
+
+const NewTodoForm = dynamic(() => import("./todoForm"), {
+  loading: () => (
+    <div className="animate-pulse bg-card/20 h-32 rounded-lg border border-border/20"></div>
+  ),
+});
+
+const EnhancementStats = dynamic(() => import("./enhancementStats"), {
+  loading: () => (
+    <div className="animate-pulse bg-card/20 h-24 rounded-lg border border-border/20"></div>
+  ),
+});
 
 export default function Todo() {
   const [todosData, setTodos] = useState<Todo[]>([]);
@@ -13,13 +31,14 @@ export default function Todo() {
   const [enhancingTodos, setEnhancingTodos] = useState<Set<number>>(new Set());
   const { user } = useAuth();
 
-  useEffect(() => {
-    if (user) {
-      fetchTodos();
-    }
-  }, [user]);
+  // Memoize expensive computations
+  const pendingTodos = useMemo(() => 
+    todosData.filter(todo => todo.enhancement_status === "pending"),
+    [todosData]
+  );
 
-  async function fetchTodos() {
+  // Memoized fetch function
+  const fetchTodos = useCallback(async () => {
     try {
       const res = await fetch('/api/todos');
       if (res.ok) {
@@ -31,24 +50,33 @@ export default function Todo() {
     } catch (error) {
       console.error('Error fetching todos:', error);
     }
-  }
+  }, []);
 
-  function removeTodo(id: number) {
+  useEffect(() => {
+    if (user) {
+      fetchTodos();
+    }
+  }, [user, fetchTodos]);
+
+  // Optimized removal function
+  const removeTodo = useCallback((id: number) => {
     setTodos(prev => prev.filter(todo => todo.id !== id));
     setEnhancingTodos(prev => {
       const newSet = new Set(prev);
       newSet.delete(id);
       return newSet;
     });
-  }
+  }, []);
 
-  function updateTodo(updatedTodo: Todo) {
+  // Optimized update function
+  const updateTodo = useCallback((updatedTodo: Todo) => {
     setTodos(prev =>
       prev.map(todo => (todo.id === updatedTodo.id ? updatedTodo : todo))
     );
-  }
+  }, []);
 
-  function addTodo(newTodo: Todo) {
+  // Optimized add function
+  const addTodo = useCallback((newTodo: Todo) => {
     setTodos(prev => [...prev, newTodo]);
     setShowNewForm(false);
     
@@ -56,7 +84,7 @@ export default function Todo() {
     if (newTodo.enhancement_status === "pending") {
       setEnhancingTodos(prev => new Set(prev).add(newTodo.id));
     }
-  }
+  }, []);
 
   const checkEnhancementStatus = useCallback(async (todoId: number) => {
     try {
@@ -65,12 +93,18 @@ export default function Todo() {
         const { data } = await res.json();
         if (data.enhancement_status !== "pending") {
           // Enhancement is complete, update the todo
-          updateTodo({
-            ...todosData.find(t => t.id === todoId)!,
-            enhanced_title: data.enhanced_title,
-            steps: data.steps,
-            enhancement_status: data.enhancement_status
-          });
+          setTodos(prevTodos => 
+            prevTodos.map(todo => 
+              todo.id === todoId 
+                ? {
+                    ...todo,
+                    enhanced_title: data.enhanced_title,
+                    steps: data.steps,
+                    enhancement_status: data.enhancement_status
+                  }
+                : todo
+            )
+          );
           
           // Remove from enhancing set
           setEnhancingTodos(prev => {
@@ -83,24 +117,36 @@ export default function Todo() {
     } catch (error) {
       console.error('Error checking enhancement status:', error);
     }
-  }, [todosData]);
+  }, []);
 
-  // Poll for enhancement status of processing todos
+  // Optimized polling with exponential backoff
   useEffect(() => {
-    const processingTodos = todosData.filter(todo => 
-      todo.enhancement_status === "pending"
-    );
+    if (pendingTodos.length === 0) return;
 
-    if (processingTodos.length === 0) return;
+    let pollInterval = 2000; // Start with 2 seconds
+    const maxInterval = 10000; // Max 10 seconds
+    
+    const poll = () => {
+      const currentPendingTodos = todosData.filter(todo => 
+        todo.enhancement_status === "pending"
+      );
+      
+      if (currentPendingTodos.length === 0) return;
 
-    const interval = setInterval(() => {
-      processingTodos.forEach(todo => {
+      // Check all pending todos
+      currentPendingTodos.forEach(todo => {
         checkEnhancementStatus(todo.id);
       });
-    }, 2000); // Check every 2 seconds
+
+      // Increase interval gradually to reduce server load
+      pollInterval = Math.min(pollInterval * 1.2, maxInterval);
+    };
+
+    poll(); // Initial check
+    const interval = setInterval(poll, pollInterval);
 
     return () => clearInterval(interval);
-  }, [todosData, checkEnhancementStatus]);
+  }, [pendingTodos.length, checkEnhancementStatus, todosData]);
 
   if (!user) {
     return null;

@@ -4,10 +4,13 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "build:analyze": "ANALYZE=true npm run build",
+    "build:prod": "NODE_ENV=production next build",
     "start": "next start",
     "start:prod": "NODE_ENV=production next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
+    "lighthouse": "lighthouse http://localhost:3000 --output json --output-path ./lighthouse-report.json --chrome-flags='--headless'",
+    "perf:analyze": "npm run build:analyze && npm run lighthouse",
     "supabase:init": "supabase init",
     "supabase:link": "supabase link --project-ref jcqijbvjznhcsebhwrxx"
   },
@@ -30,6 +33,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@next/bundle-analyzer": "^15.5.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
