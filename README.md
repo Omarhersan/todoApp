@@ -5,7 +5,7 @@ A modern, intelligent todo application built with Next.js 15, featuring AI-power
 ## ✨ Key Features
 
 ### 🤖 AI-Powered Task Enhancement
-- **Automatic AI enhancement** of all tasks using OpenAI GPT-3.5-turbo
+- **Automatic AI enhancement** of all tasks using OpenAI gpt-5-mini
 - **Smart title generation** - transforms basic titles into descriptive ones
 - **Action step breakdown** - AI generates 3-5 specific, actionable steps for each task
 - **Real-time status tracking** with visual indicators (Processing → Enhanced → Failed)
@@ -39,7 +39,7 @@ A modern, intelligent todo application built with Next.js 15, featuring AI-power
 - **Styling**: Tailwind CSS, shadcn/ui components, Radix UI
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: Custom phone-based auth with cookies
-- **AI Integration**: OpenAI GPT-3.5-turbo
+- **AI Integration**: OpenAI gpt-5-mini
 - **State Management**: React Context API
 - **Performance**: Code splitting, dynamic imports, bundle analysis
 
