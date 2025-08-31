@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 interface User {
   id: number;
@@ -23,9 +23,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const checkAuth = async () => {
+  // Memoized auth check function to prevent unnecessary re-renders
+  const checkAuth = useCallback(async () => {
     try {
-      const response = await fetch('/api/auth/me');
+      const response = await fetch('/api/auth/me', {
+        // Add caching headers for better performance
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setUser(data.data.user);
@@ -38,9 +44,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const login = async (phone: string) => {
+  // Memoized login function
+  const login = useCallback(async (phone: string) => {
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -53,9 +60,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     setUser(data.data.user);
-  };
+  }, []);
 
-  const register = async (name: string, phone: string) => {
+  // Memoized register function
+  const register = useCallback(async (name: string, phone: string) => {
     const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -68,26 +76,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     setUser(data.data.user);
-  };
+  }, []);
 
-  const logout = async () => {
+  // Memoized logout function
+  const logout = useCallback(async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
     setUser(null);
-  };
+  }, []);
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [checkAuth]);
+
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({
+    user,
+    isLoading,
+    login,
+    register,
+    logout,
+    checkAuth,
+  }), [user, isLoading, login, register, logout, checkAuth]);
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      isLoading,
-      login,
-      register,
-      logout,
-      checkAuth,
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
