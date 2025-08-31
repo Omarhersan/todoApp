@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CheckButton from "./ui/checkButton";
 import ActionsMenu from "./ui/actionsMenu";
 import type { Todo } from "@/types/todo";
@@ -22,10 +22,26 @@ export default function TodoItem({
   const [steps, setSteps] = useState(todo.steps || []);
   const [saving, setSaving] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
+  const [justEnhanced, setJustEnhanced] = useState(false);
 
   // Use enhanced title if available, otherwise use original title
   const displayTitle = todo.enhanced_title || todo.title;
   const isEnhanced = !!todo.enhanced_title;
+  const isProcessing = todo.enhancement_status === "processing";
+  const hasFailed = todo.enhancement_status === "failed";
+
+  // Update local state when todo prop changes (for enhancement updates)
+  useEffect(() => {
+    const wasProcessing = !todo.enhanced_title;
+    setEnhancedTitle(todo.enhanced_title || '');
+    setSteps(todo.steps || []);
+    
+    // Trigger animation when task gets enhanced
+    if (wasProcessing && todo.enhanced_title && todo.enhancement_status === "done") {
+      setJustEnhanced(true);
+      setTimeout(() => setJustEnhanced(false), 2000);
+    }
+  }, [todo.enhanced_title, todo.steps, todo.enhancement_status]);
 
   async function toggleTodo() {
     const res = await fetch(`/api/todos/handle/${todo.id}`, {
@@ -106,7 +122,9 @@ export default function TodoItem({
   
 
   return (
-    <li className="flex flex-col p-4 rounded-lg border bg-card/70 backdrop-blur-md shadow-md mb-2 transition hover:shadow-lg">
+    <li className={`flex flex-col p-4 rounded-lg border bg-card/70 backdrop-blur-md shadow-md mb-2 transition-all duration-300 hover:shadow-lg ${
+      justEnhanced ? 'ring-2 ring-green-300 bg-green-50/50 scale-[1.02]' : ''
+    }`}>
   <div className="flex items-start justify-between">
     <div className="flex items-start gap-3">
       <CheckButton checked={checked} onToggle={toggleTodo} />
@@ -115,9 +133,20 @@ export default function TodoItem({
           <p className={checked ? "line-through text-muted-foreground font-semibold" : "font-semibold text-foreground"}>
             {displayTitle}
           </p>
-          {isEnhanced && (
-            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-              Enhanced
+          {isProcessing && (
+            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center gap-1">
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+              Enhancing...
+            </span>
+          )}
+          {isEnhanced && !isProcessing && (
+            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full flex items-center gap-1">
+              ✨ Enhanced
+            </span>
+          )}
+          {hasFailed && (
+            <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full flex items-center gap-1">
+              ⚠️ Enhancement failed
             </span>
           )}
         </div>
