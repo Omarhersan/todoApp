@@ -109,10 +109,14 @@ Content-Type: application/json
     "completed_at": null,
     "user_id": 123,
     "enhancement_status": "pending",
-    "source": "external_api"
+    "source": "external_api",
+    "enhanced_title": null,
+    "steps": null
   }
 }
 ```
+
+**Note:** Tasks created via external API are automatically enhanced with AI-generated titles and steps. The enhancement happens in the background, and the task status will update from "pending" to "done" once complete.
 
 ### 4. Update Todo
 ```
@@ -264,6 +268,41 @@ curl -X DELETE http://localhost:3000/api/external/todos/1 \
 
 ## Frontend vs External API
 
-- **Frontend**: Uses `/api/todos` with cookie authentication (unchanged)
-- **External APIs**: Uses `/api/external/todos` with Bearer token authentication + phone number
-- Both access the same database but with different authentication methods
+- **Frontend**: Uses `/api/todos` with cookie authentication - auto-enhanced with AI
+- **External APIs**: Uses `/api/external/todos` with Bearer token authentication + phone number - also auto-enhanced with AI
+- Both access the same database and use the same OpenAI enhancement system
+- All tasks, regardless of source, get enhanced titles and actionable steps automatically
+
+## AI Enhancement for External APIs
+
+### Automatic Enhancement
+When a task is created via the external API (e.g., WhatsApp integration), it automatically triggers AI enhancement:
+
+1. **Task Creation**: Status starts as "pending"
+2. **AI Processing**: OpenAI generates enhanced title and actionable steps
+3. **Database Update**: Status changes to "done" with enhanced content
+4. **Fallback**: Uses rule-based enhancement if OpenAI fails
+
+### Enhanced Response Format
+After enhancement completes, tasks will have additional fields:
+```json
+{
+  "id": 1,
+  "title": "buy groceries",
+  "enhanced_title": "Purchase weekly groceries and household essentials ✨",
+  "steps": [
+    "Research options and compare prices",
+    "Plan and prepare for: buy groceries",
+    "Execute the main task: buy groceries",
+    "Review and finalize: buy groceries",
+    "Complete the purchase"
+  ],
+  "enhancement_status": "done",
+  "source": "external_api"
+}
+```
+
+### Enhancement Status Values
+- `"pending"`: Enhancement in progress
+- `"done"`: Successfully enhanced with AI
+- `"failed"`: Enhancement failed (fallback used)
