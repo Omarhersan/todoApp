@@ -9,9 +9,11 @@ Successfully implemented end-to-end automatic task enhancement with OpenAI integ
 - ✅ **Auto-trigger on creation**: Every new task automatically gets enhanced
 - ✅ **GPT-3.5-turbo integration**: Intelligent title and step generation
 - ✅ **Fallback system**: Rule-based enhancement when OpenAI unavailable
-- ✅ **Status tracking**: Processing → Done/Failed states
+- ✅ **Status tracking**: Pending → Done/Failed states
 - ✅ **Error handling**: Graceful failures with status updates
 - ✅ **Status API endpoint**: Real-time polling for enhancement progress
+- ✅ **Multi-channel support**: Frontend, WhatsApp, and external API tasks all enhanced
+- ✅ **Unified enhancement**: Same AI enhancement logic across all input sources
 
 ### Frontend (Real-time UI)
 - ✅ **Live status updates**: 2-second polling for enhancement completion
@@ -26,9 +28,10 @@ Successfully implemented end-to-end automatic task enhancement with OpenAI integ
 
 ### API Endpoints
 ```
-POST /api/todos           → Auto-triggers enhancement
-POST /api/todos/enhance   → Manual/retry enhancement  
-GET  /api/todos/status    → Poll enhancement progress
+POST /api/todos                    → Auto-triggers enhancement (Frontend)
+POST /api/external/todos           → Auto-triggers enhancement (WhatsApp/External)
+POST /api/todos/enhance            → Manual/retry enhancement  
+GET  /api/todos/status             → Poll enhancement progress
 ```
 
 ### Component Structure
@@ -47,10 +50,17 @@ Todo (main)
 
 ## 💡 User Experience Flow
 
+### Frontend Tasks
 1. **Create Task** → Appears instantly with "Enhancing..." badge
 2. **AI Processing** → Status banner shows progress count
 3. **Enhancement Complete** → Task glows green, shows "✨ Enhanced"
 4. **Enhanced Content** → Better title + actionable steps visible
+
+### WhatsApp/External API Tasks
+1. **Create via WhatsApp** → Task created with "pending" status
+2. **Background AI Processing** → OpenAI enhances title and generates steps
+3. **Auto-update in Database** → Status changes to "done" with enhanced content
+4. **User sees enhanced task** → Next time they view, task has improved title and steps
 
 ## 🎨 Visual Features
 
@@ -75,15 +85,21 @@ Todo (main)
 
 ```mermaid
 graph TD
-    A[User Creates Task] --> B[Task Saved with 'processing']
-    B --> C[OpenAI API Called]
-    C --> D{API Success?}
-    D -->|Yes| E[Enhanced Title & Steps Generated]
-    D -->|No| F[Fallback Enhancement Used]
-    E --> G[Database Updated to 'done']
-    F --> G
-    G --> H[UI Polls and Updates]
-    H --> I[User Sees Enhanced Task ✨]
+    A[User Creates Task] --> B{Creation Source?}
+    B -->|Frontend| C[Task Saved with 'pending']
+    B -->|WhatsApp/External| D[Task Saved with 'pending']
+    C --> E[OpenAI API Called]
+    D --> E
+    E --> F{API Success?}
+    F -->|Yes| G[Enhanced Title & Steps Generated]
+    F -->|No| H[Fallback Enhancement Used]
+    G --> I[Database Updated to 'done']
+    H --> I
+    I --> J{Source Type?}
+    J -->|Frontend| K[UI Polls and Updates Instantly]
+    J -->|External| L[Enhanced Content Ready for Next View]
+    K --> M[User Sees Enhanced Task ✨]
+    L --> M
 ```
 
 ## 🛠 Configuration
