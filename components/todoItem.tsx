@@ -18,7 +18,7 @@ export default function TodoItem({
   const [expanded, setExpanded] = useState(false);
   const [title, setTitle] = useState(todo.title);
   const [enhancedTitle, setEnhancedTitle] = useState(todo.enhanced_title || '');
-  const [description, setDescription] = useState(todo.description);
+  const [description, setDescription] = useState(todo.description || '');
   const [steps, setSteps] = useState(todo.steps || []);
   const [saving, setSaving] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
@@ -114,7 +114,7 @@ export default function TodoItem({
   function handleCancel() {
     setTitle(todo.title);
     setEnhancedTitle(todo.enhanced_title || '');
-    setDescription(todo.description);
+    setDescription(todo.description || '');
     setSteps(todo.steps || []);
     setExpanded(false);
   }

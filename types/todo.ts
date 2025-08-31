@@ -4,7 +4,7 @@ export type Todo = {
   created_at: string;
   is_completed: boolean;
   completed_at: string | null;
-  description: string;
+  description: string | null;
   user_id: number;
   enhanced_title?: string;
   steps?: string[];
