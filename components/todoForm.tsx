@@ -45,7 +45,7 @@ export default function NewTodoForm({
       setDescription("");
       
       // Show success message based on enhancement status
-      if (data.enhancement_status === "processing") {
+      if (data.enhancement_status === "pending") {
         setSuccessMessage("Task created! AI is enhancing it now... ✨");
       } else if (data.enhancement_status === "done") {
         setSuccessMessage("Task created and enhanced! ✨");

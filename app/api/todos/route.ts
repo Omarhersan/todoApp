@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       created_at: new Date().toISOString(),
       completed_at: null,
       user_id: parseInt(userIdCookie.value),
-      enhancement_status: "processing",
+      enhancement_status: "pending",
       source: "app"
     })
     .select()

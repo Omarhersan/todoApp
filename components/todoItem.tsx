@@ -27,7 +27,7 @@ export default function TodoItem({
   // Use enhanced title if available, otherwise use original title
   const displayTitle = todo.enhanced_title || todo.title;
   const isEnhanced = !!todo.enhanced_title;
-  const isProcessing = todo.enhancement_status === "processing";
+  const isProcessing = todo.enhancement_status === "pending";
   const hasFailed = todo.enhancement_status === "failed";
 
   // Update local state when todo prop changes (for enhancement updates)

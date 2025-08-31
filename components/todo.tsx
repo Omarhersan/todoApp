@@ -22,7 +22,7 @@ export default function Todo() {
   // Poll for enhancement status of processing todos
   useEffect(() => {
     const processingTodos = todosData.filter(todo => 
-      todo.enhancement_status === "processing"
+      todo.enhancement_status === "pending"
     );
 
     if (processingTodos.length === 0) return;
@@ -55,7 +55,7 @@ export default function Todo() {
       const res = await fetch(`/api/todos/status?id=${todoId}`);
       if (res.ok) {
         const { data } = await res.json();
-        if (data.enhancement_status !== "processing") {
+        if (data.enhancement_status !== "pending") {
           // Enhancement is complete, update the todo
           updateTodo({
             ...todosData.find(t => t.id === todoId)!,
@@ -96,8 +96,8 @@ export default function Todo() {
     setTodos(prev => [...prev, newTodo]);
     setShowNewForm(false);
     
-    // If the new todo is processing, add it to enhancing set
-    if (newTodo.enhancement_status === "processing") {
+    // If the new todo is pending, add it to enhancing set
+    if (newTodo.enhancement_status === "pending") {
       setEnhancingTodos(prev => new Set(prev).add(newTodo.id));
     }
   }

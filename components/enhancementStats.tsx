@@ -9,7 +9,7 @@ interface EnhancementStatsProps {
 export default function EnhancementStats({ todos }: EnhancementStatsProps) {
   const totalTodos = todos.length;
   const enhancedTodos = todos.filter(todo => todo.enhanced_title).length;
-  const processingTodos = todos.filter(todo => todo.enhancement_status === "processing").length;
+  const processingTodos = todos.filter(todo => todo.enhancement_status === "pending").length;
   const failedTodos = todos.filter(todo => todo.enhancement_status === "failed").length;
 
   if (totalTodos === 0) return null;
