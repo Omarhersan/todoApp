@@ -1,105 +1,245 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# 📋 AI-Enhanced Todo App
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+A modern, intelligent todo application built with Next.js 15, featuring AI-powered task enhancement, phone-based authentication, and multi-channel support.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+## ✨ Key Features
 
-## Features
+### 🤖 AI-Powered Task Enhancement
+- **Automatic AI enhancement** of all tasks using OpenAI GPT-3.5-turbo
+- **Smart title generation** - transforms basic titles into descriptive ones
+- **Action step breakdown** - AI generates 3-5 specific, actionable steps for each task
+- **Real-time status tracking** with visual indicators (Processing → Enhanced → Failed)
+- **Fallback system** with rule-based enhancement when OpenAI is unavailable
+- **Multi-source enhancement** - works for web app, external API, and WhatsApp integrations
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+### 📱 Phone-Based Authentication
+- **Simple signup/login** using just phone number (no password required)
+- **Session management** with secure HTTP-only cookies
+- **User isolation** - each user sees only their own todos
+- **7-day session expiration** with automatic cleanup
 
-## Demo
+### 🔌 External API Integration
+- **RESTful API** for external systems integration
+- **Bearer token authentication** with configurable API keys
+- **Multi-source support** (n8n, WhatsApp, and other external systems)
+- **CRUD operations** with proper error handling
+- **User context** via phone number headers
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+### 🎨 Modern UI/UX
+- **Dark/Light theme** support with system preference detection
+- **Responsive design** optimized for all screen sizes
+- **Real-time updates** with 2-second polling for enhancement status
+- **Visual feedback** including success animations and status badges
+- **Enhancement statistics** dashboard
+- **Non-blocking UX** - tasks appear instantly while enhancing in background
 
-## Deploy to Vercel
+## 🛠 Tech Stack
 
-Vercel deployment will guide you through creating a Supabase account and project.
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS, shadcn/ui components, Radix UI
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Custom phone-based auth with cookies
+- **AI Integration**: OpenAI GPT-3.5-turbo
+- **State Management**: React Context API
+- **Performance**: Code splitting, dynamic imports, bundle analysis
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+## 🚀 Getting Started
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+### Prerequisites
+- Node.js 18+ and npm
+- Supabase project
+- OpenAI API key (optional, for AI enhancement)
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+### Installation
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
-
-## Clone and run locally
-
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
-
-2. Create a Next.js app using the Supabase Starter template npx command
-
+1. **Clone the repository**
    ```bash
-   npx create-next-app --example with-supabase with-supabase-app
+   git clone <your-repo-url>
+   cd todo
    ```
 
+2. **Install dependencies**
    ```bash
-   yarn create next-app --example with-supabase with-supabase-app
+   npm install
    ```
 
+3. **Setup environment variables**
    ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
+   cp .env.example .env.local
    ```
 
-3. Use `cd` to change into the app's directory
-
-   ```bash
-   cd with-supabase-app
+   Configure your `.env.local`:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   OPENAI_API_KEY=sk-your-openai-api-key (optional)
+   N8N_API_KEY=your-n8n-api-key (for external API)
    ```
 
-4. Rename `.env.example` to `.env.local` and update the following:
+4. **Setup Supabase Database**
+   
+   Create the following tables in your Supabase project:
 
+   ```sql
+   -- Users table
+   CREATE TABLE public.users (
+     id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+     created_at timestamp with time zone NOT NULL DEFAULT now(),
+     name text DEFAULT ''::text,
+     phone text,
+     CONSTRAINT users_pkey PRIMARY KEY (id)
+   );
+
+   -- Todos table
+   CREATE TABLE public.todos (
+     id bigint GENERATED ALWAYS AS IDENTITY NOT NULL UNIQUE,
+     created_at timestamp with time zone NOT NULL DEFAULT now(),
+     title character varying,
+     is_completed boolean DEFAULT false,
+     completed_at timestamp with time zone,
+     description text,
+     user_id bigint REFERENCES public.users(id) ON DELETE CASCADE,
+     enhanced_title text,
+     steps text[],
+     enhancement_status text DEFAULT 'pending',
+     source text DEFAULT 'web_app',
+     CONSTRAINT todos_pkey PRIMARY KEY (id)
+   );
    ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
 
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
-
-5. You can now run the Next.js local development server:
-
+5. **Run the development server**
    ```bash
    npm run dev
    ```
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+## 📖 API Documentation
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+### External API Endpoints
 
-## Feedback and issues
+All external API requests require:
+- `Authorization: Bearer <API_KEY>`
+- `x-call-from: <source>` (e.g., "n8n")
+- `x-user-phone: <phone_number>`
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+#### Get All Todos
+```http
+GET /api/external/todos
+```
 
-## More Supabase examples
+#### Create Todo
+```http
+POST /api/external/todos
+Content-Type: application/json
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+{
+  "title": "Task title",
+  "description": "Task description (optional)"
+}
+```
+
+#### Update Todo
+```http
+PUT /api/external/todos/{id}
+Content-Type: application/json
+
+{
+  "title": "Updated title",
+  "is_completed": true
+}
+```
+
+#### Delete Todo
+```http
+DELETE /api/external/todos/{id}
+```
+
+### Internal API Endpoints
+
+- `GET /api/todos` - Get user's todos
+- `POST /api/todos` - Create new todo
+- `PUT /api/todos/handle/{id}` - Update todo
+- `DELETE /api/todos/handle/{id}` - Delete todo
+- `GET /api/todos/status` - Get enhancement status
+- `POST /api/todos/enhance` - Manual enhancement trigger
+
+## 🧠 AI Enhancement System
+
+The AI enhancement system automatically improves todos by:
+
+1. **Analyzing the task title** for context and intent
+2. **Generating enhanced titles** that are more descriptive and actionable
+3. **Breaking down tasks** into 3-5 specific, actionable steps
+4. **Updating status** from "pending" → "done" or "failed"
+5. **Providing visual feedback** in the UI with badges and animations
+
+### Enhancement Flow
+```
+User creates todo → Auto-enhancement triggered → OpenAI processes → 
+Database updated → UI shows real-time status → Enhanced content displayed
+```
+
+## 🎯 Performance Features
+
+- **Bundle analysis** with `npm run build:analyze`
+- **Code splitting** with dynamic imports
+- **Image optimization** with Next.js Image component
+- **Lighthouse performance monitoring**
+- **Type checking** with TypeScript strict mode
+- **Production builds** optimized for deployment
+
+## 🚀 Deployment
+
+The app is deployment-ready with:
+
+- **Production configuration** in `next.config.ts`
+- **Environment variable validation**
+- **Build scripts** for production
+- **Type checking** and linting
+- **Security headers** and compression
+
+### Build Commands
+```bash
+npm run build:prod     # Production build
+npm run start:prod     # Start production server
+npm run type-check     # TypeScript validation
+npm run lint           # ESLint checking
+```
+
+## 🔐 Security Features
+
+- **HTTP-only cookies** for session management
+- **Bearer token authentication** for external APIs
+- **Input validation** and sanitization
+- **SQL injection protection** via Supabase
+- **CORS configuration** for API endpoints
+- **User isolation** - strict data separation
+
+## 📱 Multi-Platform Support
+
+- **Web Application** - Full-featured React interface
+- **External API** - For n8n, Zapier, and other automation tools
+- **WhatsApp Integration** - Via external API endpoints
+- **Mobile Responsive** - Optimized for all screen sizes
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/) - React framework
+- [Supabase](https://supabase.com/) - Backend as a Service
+- [OpenAI](https://openai.com/) - AI enhancement
+- [shadcn/ui](https://ui.shadcn.com/) - UI components
+- [Tailwind CSS](https://tailwindcss.com/) - Styling framework
