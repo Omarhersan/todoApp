@@ -19,23 +19,6 @@ export default function Todo() {
     }
   }, [user]);
 
-  // Poll for enhancement status of processing todos
-  useEffect(() => {
-    const processingTodos = todosData.filter(todo => 
-      todo.enhancement_status === "pending"
-    );
-
-    if (processingTodos.length === 0) return;
-
-    const interval = setInterval(() => {
-      processingTodos.forEach(todo => {
-        checkEnhancementStatus(todo.id);
-      });
-    }, 2000); // Check every 2 seconds
-
-    return () => clearInterval(interval);
-  }, [todosData]);
-
   async function fetchTodos() {
     try {
       const res = await fetch('/api/todos');
@@ -47,33 +30,6 @@ export default function Todo() {
       }
     } catch (error) {
       console.error('Error fetching todos:', error);
-    }
-  }
-
-  async function checkEnhancementStatus(todoId: number) {
-    try {
-      const res = await fetch(`/api/todos/status?id=${todoId}`);
-      if (res.ok) {
-        const { data } = await res.json();
-        if (data.enhancement_status !== "pending") {
-          // Enhancement is complete, update the todo
-          updateTodo({
-            ...todosData.find(t => t.id === todoId)!,
-            enhanced_title: data.enhanced_title,
-            steps: data.steps,
-            enhancement_status: data.enhancement_status
-          });
-          
-          // Remove from enhancing set
-          setEnhancingTodos(prev => {
-            const newSet = new Set(prev);
-            newSet.delete(todoId);
-            return newSet;
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error checking enhancement status:', error);
     }
   }
 
@@ -101,6 +57,50 @@ export default function Todo() {
       setEnhancingTodos(prev => new Set(prev).add(newTodo.id));
     }
   }
+
+  const checkEnhancementStatus = useCallback(async (todoId: number) => {
+    try {
+      const res = await fetch(`/api/todos/status?id=${todoId}`);
+      if (res.ok) {
+        const { data } = await res.json();
+        if (data.enhancement_status !== "pending") {
+          // Enhancement is complete, update the todo
+          updateTodo({
+            ...todosData.find(t => t.id === todoId)!,
+            enhanced_title: data.enhanced_title,
+            steps: data.steps,
+            enhancement_status: data.enhancement_status
+          });
+          
+          // Remove from enhancing set
+          setEnhancingTodos(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(todoId);
+            return newSet;
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error checking enhancement status:', error);
+    }
+  }, [todosData]);
+
+  // Poll for enhancement status of processing todos
+  useEffect(() => {
+    const processingTodos = todosData.filter(todo => 
+      todo.enhancement_status === "pending"
+    );
+
+    if (processingTodos.length === 0) return;
+
+    const interval = setInterval(() => {
+      processingTodos.forEach(todo => {
+        checkEnhancementStatus(todo.id);
+      });
+    }, 2000); // Check every 2 seconds
+
+    return () => clearInterval(interval);
+  }, [todosData, checkEnhancementStatus]);
 
   if (!user) {
     return null;
