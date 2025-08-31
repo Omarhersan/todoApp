@@ -17,7 +17,9 @@ export default function TodoItem({
   const [checked, setChecked] = useState(todo.is_completed);
   const [expanded, setExpanded] = useState(false);
   const [title, setTitle] = useState(todo.title);
+  const [enhancedTitle, setEnhancedTitle] = useState(todo.enhanced_title || '');
   const [description, setDescription] = useState(todo.description);
+  const [steps, setSteps] = useState(todo.steps || []);
   const [saving, setSaving] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
 
@@ -43,7 +45,7 @@ export default function TodoItem({
   }
 
   async function handleDelete() {
-    const res = await fetch(`/api/todos/handle${todo.id}`, {
+    const res = await fetch(`/api/todos/handle/${todo.id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: todo.id }),
@@ -59,14 +61,18 @@ export default function TodoItem({
   async function handleSave() {
     setSaving(true);
     try {
-      const res = await fetch(`/api/todos/handle${todo.id}`, {
+      const updateData = {
+        id: todo.id,
+        title,
+        description,
+        ...(todo.enhanced_title && { enhanced_title: enhancedTitle }),
+        ...(todo.steps && todo.steps.length > 0 && { steps }),
+      };
+
+      const res = await fetch(`/api/todos/handle/${todo.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: todo.id,
-          title,
-          description,
-        }),
+        body: JSON.stringify(updateData),
       });
 
       if (!res.ok) {
@@ -74,7 +80,15 @@ export default function TodoItem({
         throw new Error(err.error);
       }
 
-      onUpdateLocal({ ...todo, title, description });
+      // Update the todo with all the changed fields, preserving other data
+      const updatedTodo = { 
+        ...todo, 
+        title, 
+        description,
+        ...(todo.enhanced_title && { enhanced_title: enhancedTitle }),
+        ...(todo.steps && todo.steps.length > 0 && { steps }),
+      };
+      onUpdateLocal(updatedTodo);
       setExpanded(false);
     } finally {
       setSaving(false);
@@ -83,7 +97,9 @@ export default function TodoItem({
 
   function handleCancel() {
     setTitle(todo.title);
+    setEnhancedTitle(todo.enhanced_title || '');
     setDescription(todo.description);
+    setSteps(todo.steps || []);
     setExpanded(false);
   }
 
@@ -135,16 +151,74 @@ export default function TodoItem({
 
   {expanded && (
     <div className="mt-3 space-y-2">
-      <input
-        className="w-full border rounded p-2 bg-background text-foreground"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <textarea
-        className="w-full border rounded p-2 bg-background text-foreground"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1">Original Title</label>
+        <input
+          className="w-full border rounded p-2 bg-background text-foreground"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Original title"
+        />
+      </div>
+      
+      {todo.enhanced_title && (
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">Enhanced Title</label>
+          <input
+            className="w-full border rounded p-2 bg-background text-foreground"
+            value={enhancedTitle}
+            onChange={(e) => setEnhancedTitle(e.target.value)}
+            placeholder="Enhanced title"
+          />
+        </div>
+      )}
+      
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1">Description</label>
+        <textarea
+          className="w-full border rounded p-2 bg-background text-foreground"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Description"
+        />
+      </div>
+      
+      {todo.steps && todo.steps.length > 0 && (
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">Steps</label>
+          <div className="space-y-2">
+            {steps.map((step, index) => (
+              <div key={index} className="flex gap-2 items-center">
+                <input
+                  className="flex-1 border rounded p-2 bg-background text-foreground text-sm"
+                  value={step}
+                  onChange={(e) => {
+                    const newSteps = [...steps];
+                    newSteps[index] = e.target.value;
+                    setSteps(newSteps);
+                  }}
+                  placeholder={`Step ${index + 1}`}
+                />
+                <button
+                  onClick={() => {
+                    const newSteps = steps.filter((_, i) => i !== index);
+                    setSteps(newSteps);
+                  }}
+                  className="px-2 py-1 text-red-500 hover:text-red-700 text-sm"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            <button
+              onClick={() => setSteps([...steps, ''])}
+              className="text-sm text-blue-600 hover:text-blue-800"
+            >
+              + Add Step
+            </button>
+          </div>
+        </div>
+      )}
       <div className="flex gap-2 mt-2">
         <button
           onClick={handleSave}
