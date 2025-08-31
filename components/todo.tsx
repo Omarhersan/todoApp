@@ -107,22 +107,29 @@ export default function Todo() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 p-6">
       {/* Enhancement Statistics */}
-      {todosData.length > 0 && <EnhancementStats todos={todosData} />}
+      {todosData.length > 0 && (
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+          <EnhancementStats todos={todosData} />
+        </div>
+      )}
       
       {/* Enhancement Status Banner */}
       {enhancingTodos.size > 0 && (
-        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-500 rounded-full animate-pulse"></div>
-            <span className="text-blue-800 text-sm font-medium">
+        <div className="p-4 bg-primary/10 border border-primary/20 rounded-xl backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-5 h-5 bg-primary rounded-full animate-pulse"></div>
+              <div className="absolute inset-0 w-5 h-5 bg-primary rounded-full animate-ping opacity-20"></div>
+            </div>
+            <span className="text-primary font-medium">
               {enhancingTodos.size === 1 
-                ? "1 task is being enhanced by AI..." 
-                : `${enhancingTodos.size} tasks are being enhanced by AI...`}
+                ? "✨ 1 task is being enhanced by AI..." 
+                : `✨ ${enhancingTodos.size} tasks are being enhanced by AI...`}
             </span>
           </div>
-          <p className="text-blue-700 text-xs mt-1">
+          <p className="text-muted-foreground text-sm mt-2 ml-8">
             Enhanced tasks will show improved titles and actionable steps automatically.
           </p>
         </div>
@@ -132,30 +139,54 @@ export default function Todo() {
       <div>
         {!showNewForm ? (
           <button
-            className="px-4 py-2 bg-primary text-primary-foreground rounded shadow hover:shadow-lg transition"
+            className="group relative overflow-hidden px-6 py-3 bg-primary text-primary-foreground rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium"
             onClick={() => setShowNewForm(true)}
           >
-            + Add New Task
+            <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 transition-opacity opacity-0 group-hover:opacity-100"></div>
+            <span className="relative flex items-center gap-2">
+              <span className="text-lg">+</span>
+              Add New Task
+            </span>
           </button>
         ) : (
-          <NewTodoForm 
-            onAdd={addTodo} 
-            onCancel={() => setShowNewForm(false)} 
-          />
+          <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+            <NewTodoForm 
+              onAdd={addTodo} 
+              onCancel={() => setShowNewForm(false)} 
+            />
+          </div>
         )}
       </div>
 
       {/* Todo Grid */}
-      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {todosData.map(todo => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onDeleteLocal={removeTodo}
-            onUpdateLocal={updateTodo}
-          />
+          <div key={todo.id} className="transform transition-all duration-300 hover:scale-105">
+            <TodoItem
+              todo={todo}
+              onDeleteLocal={removeTodo}
+              onUpdateLocal={updateTodo}
+            />
+          </div>
         ))}
-      </ul>
+      </div>
+
+      {/* Empty State */}
+      {todosData.length === 0 && !showNewForm && (
+        <div className="text-center py-16">
+          <div className="w-24 h-24 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
+            <span className="text-4xl">📝</span>
+          </div>
+          <h3 className="text-xl font-semibold text-foreground mb-2">No tasks yet</h3>
+          <p className="text-muted-foreground mb-6">Start by adding your first task to get organized!</p>
+          <button
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium"
+            onClick={() => setShowNewForm(true)}
+          >
+            + Add Your First Task
+          </button>
+        </div>
+      )}
     </div>
   );
 }

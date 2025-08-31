@@ -30,21 +30,32 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center bg-background text-foreground p-4">
-      {/* Navbar */}
-      <Navbar />
+    <main className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Navbar */}
+        <Navbar />
 
-      {/* Page Title */}
-      <h1 className="text-3xl font-bold mt-6 mb-6">
-        Welcome, {user.name}!
-      </h1>
+        {/* Welcome Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            Welcome back, {user.name}!
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Stay organized and productive with your AI-enhanced todo list
+          </p>
+        </div>
 
-      {/* Todo Container */}
-      <Box className="w-full max-w-5xl p-6 bg-card/70 backdrop-blur-md rounded-xl shadow-lg">
-        
-        {/* Add Task Button & Form handled by Todo component */}
-        <Todo />
-      </Box>
+        {/* Todo Container */}
+        <div className="relative">
+          {/* Subtle background decoration */}
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-3xl opacity-20 blur-xl"></div>
+          
+          {/* Main content */}
+          <div className="relative bg-card/40 backdrop-blur-xl border border-border/30 rounded-3xl shadow-2xl overflow-hidden">
+            <Todo />
+          </div>
+        </div>
+      </div>
     </main>
   );
 }

@@ -69,34 +69,58 @@ export default function NewTodoForm({
   }
 
   return (
-    <div className="mb-4 flex flex-col gap-2 border rounded-lg p-4 bg-card/70 backdrop-blur-md shadow-md">
+    <div className="space-y-4">
       {successMessage && (
-        <div className="mb-2 p-2 bg-green-50 border border-green-200 text-green-800 rounded text-sm">
+        <div className="p-4 bg-secondary/30 border border-secondary/50 text-secondary-foreground rounded-xl text-sm font-medium flex items-center gap-2">
+          <span className="text-lg">✨</span>
           {successMessage}
         </div>
       )}
-      <input
-        className="border rounded p-2 bg-background text-foreground"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="New task title"
-      />
-      <textarea
-        className="border rounded p-2 bg-background text-foreground"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="New task description"
-      />
-      <div className="flex gap-2 mt-2">
+      
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">Task Title</label>
+          <input
+            className="w-full border border-border rounded-lg p-4 bg-background/50 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="What needs to be done?"
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleAdd()}
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">Description (optional)</label>
+          <textarea
+            className="w-full border border-border rounded-lg p-4 bg-background/50 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Add any additional details..."
+            rows={3}
+          />
+        </div>
+      </div>
+      
+      <div className="flex gap-3 pt-2">
         <button
-          className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
+          className="flex-1 px-6 py-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md focus:ring-2 focus:ring-primary/20"
           onClick={handleAdd}
-          disabled={adding}
+          disabled={adding || !title.trim()}
         >
-          {adding ? "Adding..." : "Add Task"}
+          {adding ? (
+            <span className="flex items-center justify-center gap-2">
+              <div className="w-5 h-5 border-2 border-primary-foreground/20 border-t-primary-foreground rounded-full animate-spin"></div>
+              Creating Task...
+            </span>
+          ) : (
+            <span className="flex items-center justify-center gap-2">
+              <span className="text-lg">+</span>
+              Add Task
+            </span>
+          )}
         </button>
         <button
-          className="px-4 py-2 border rounded"
+          className="px-6 py-4 border border-border bg-background/50 text-foreground rounded-lg font-medium hover:bg-muted/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all focus:ring-2 focus:ring-border"
           onClick={handleCancel}
           disabled={adding}
         >
