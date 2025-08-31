@@ -35,7 +35,7 @@ This guide explains how to set up OpenAI integration for automatic task enhancem
 When a user creates a new todo task, the system will:
 
 1. **Automatically trigger enhancement** after todo creation
-2. **Send the task title to OpenAI** using GPT-3.5-turbo
+2. **Send the task title to OpenAI** using gpt-5-mini
 3. **Generate enhanced content**:
    - Enhanced, more descriptive title
    - 3-5 specific, actionable steps
@@ -71,14 +71,14 @@ When a user creates a new todo task, the system will:
 - All visual indicators still work
 
 #### With OpenAI API Key
-- Uses GPT-3.5-turbo for intelligent enhancement
+- Uses gpt-5-mini for intelligent enhancement
 - More contextual and relevant suggestions
 - Better understanding of task complexity
 - Real-time status updates
 
 ### 6. Cost Considerations
 
-- **Model Used**: GPT-3.5-turbo
+- **Model Used**: gpt-5-mini
 - **Average Cost**: ~$0.002 per enhancement
 - **Token Limit**: 300 tokens max per response
 - **Fallback**: Free rule-based system if API fails

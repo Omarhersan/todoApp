@@ -7,7 +7,7 @@ Successfully implemented end-to-end automatic task enhancement with OpenAI integ
 
 ### Backend (OpenAI Integration)
 - ✅ **Auto-trigger on creation**: Every new task automatically gets enhanced
-- ✅ **GPT-3.5-turbo integration**: Intelligent title and step generation
+- ✅ **gpt-5-mini integration**: Intelligent title and step generation
 - ✅ **Fallback system**: Rule-based enhancement when OpenAI unavailable
 - ✅ **Status tracking**: Pending → Done/Failed states
 - ✅ **Error handling**: Graceful failures with status updates

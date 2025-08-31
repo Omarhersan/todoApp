@@ -119,12 +119,11 @@ async function enhanceWithOpenAI(title: string): Promise<{ enhancedTitle: string
       apiKey: process.env.OPENAI_API_KEY,
     });
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: `You are a helpful assistant that enhances todo tasks. Given a todo title, you should:
+    const result = await openai.responses.create({
+      model: "gpt-5",
+      input: `You are a helpful assistant that enhances todo tasks. Given this todo title: "${title}"
+
+Please:
 1. Create an enhanced, more descriptive and actionable version of the title
 2. Generate 3-5 specific, actionable steps to complete the task
 
@@ -134,18 +133,12 @@ Respond in JSON format with:
   "steps": ["Step 1", "Step 2", "Step 3", ...]
 }
 
-Keep the enhanced title concise but more descriptive. Make steps specific and actionable.`
-        },
-        {
-          role: "user",
-          content: `Enhance this todo task: "${title}"`
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 300,
+Keep the enhanced title concise but more descriptive. Make steps specific and actionable.`,
+      reasoning: { effort: "medium" },
+      text: { verbosity: "low" },
     });
 
-    const response = completion.choices[0]?.message?.content;
+    const response = result.output_text;
     if (!response) {
       throw new Error("No response from OpenAI");
     }
