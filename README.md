@@ -16,7 +16,6 @@ A modern, intelligent todo application built with Next.js 15, featuring AI-power
 - **Simple signup/login** using just phone number (no password required)
 - **Session management** with secure HTTP-only cookies
 - **User isolation** - each user sees only their own todos
-- **7-day session expiration** with automatic cleanup
 
 ### 🔌 External API Integration
 - **RESTful API** for external systems integration
@@ -36,7 +35,7 @@ A modern, intelligent todo application built with Next.js 15, featuring AI-power
 ## 🛠 Tech Stack
 
 - **Frontend**: Next.js 15, React 19, TypeScript
-- **Styling**: Tailwind CSS, shadcn/ui components, Radix UI
+- **Styling**: Tailwind CSS
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: Custom phone-based auth with cookies
 - **AI Integration**: OpenAI gpt-5-mini
